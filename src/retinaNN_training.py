@@ -9,7 +9,7 @@
 
 
 import numpy as np
-import ConfigParser
+import configparser as ConfigParser
 
 from keras.models import Model
 from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Reshape, core, Dropout
@@ -22,6 +22,9 @@ from keras.optimizers import SGD
 import sys
 sys.path.insert(0, './lib/')
 from help_functions import *
+
+# from lib.help_functions import *
+# from retina_unet.lib.help_functions import *
 
 #function to obtain data for training/testing (validation)
 from extract_patches import get_data_training
@@ -166,8 +169,8 @@ n_ch = patches_imgs_train.shape[1]
 patch_height = patches_imgs_train.shape[2]
 patch_width = patches_imgs_train.shape[3]
 model = get_unet(n_ch, patch_height, patch_width)  #the U-net model
-print "Check: final output of the network:"
-print model.output_shape
+print("Check: final output of the network:")
+print(model.output_shape)
 plot(model, to_file='./'+name_experiment+'/'+name_experiment + '_model.png')   #check how the model looks like
 json_string = model.to_json()
 open('./'+name_experiment+'/'+name_experiment +'_architecture.json', 'w').write(json_string)
@@ -188,7 +191,7 @@ checkpointer = ModelCheckpoint(filepath='./'+name_experiment+'/'+name_experiment
 # lrate_drop = LearningRateScheduler(step_decay)
 
 patches_masks_train = masks_Unet(patches_masks_train)  #reduce memory consumption
-model.fit(patches_imgs_train, patches_masks_train, nb_epoch=N_epochs, batch_size=batch_size, verbose=2, shuffle=True, validation_split=0.1, callbacks=[checkpointer])
+model.fit(patches_imgs_train, patches_masks_train, epochs=N_epochs, batch_size=batch_size, verbose=2, shuffle=True, validation_split=0.1, callbacks=[checkpointer])
 
 
 #========== Save and test the last model ===================
