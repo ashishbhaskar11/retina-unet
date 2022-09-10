@@ -20,7 +20,7 @@ from keras.utils.vis_utils import plot_model as plot
 from keras.optimizers import SGD
 
 import sys
-sys.path.insert(0, './lib/')
+sys.path.append('/Users/ashishbhaskar/Desktop/BTP/retina_unet/lib')
 from help_functions import *
 
 # from lib.help_functions import *
@@ -135,10 +135,14 @@ def get_gnet(n_ch,patch_height,patch_width):
     return model
 
 #========= Load settings from Config file
+# sys.path.pop()
 config = ConfigParser.RawConfigParser()
-config.read('configuration.txt')
+config.read_file(open(r'/Users/ashishbhaskar/Desktop/BTP/retina_unet/configuration.txt'))
+# config.read('configuration.txt')
 #patch to the datasets
 path_data = config.get('data paths', 'path_local')
+
+
 #Experiment name
 name_experiment = config.get('experiment name', 'name')
 #training settings
@@ -160,8 +164,8 @@ patches_imgs_train, patches_masks_train = get_data_training(
 
 #========= Save a sample of what you're feeding to the neural network ==========
 N_sample = min(patches_imgs_train.shape[0],40)
-visualize(group_images(patches_imgs_train[0:N_sample,:,:,:],5),'./'+name_experiment+'/'+"sample_input_imgs")#.show()
-visualize(group_images(patches_masks_train[0:N_sample,:,:,:],5),'./'+name_experiment+'/'+"sample_input_masks")#.show()
+visualize(group_images(patches_imgs_train[0:N_sample,:,:,:],5),'/Users/ashishbhaskar/Desktop/BTP/retina_unet/'+name_experiment+'/'+"sample_input_imgs")#.show()
+visualize(group_images(patches_masks_train[0:N_sample,:,:,:],5),'/Users/ashishbhaskar/Desktop/BTP/retina_unet/'+name_experiment+'/'+"sample_input_masks")#.show()
 
 
 #=========== Construct and save the model arcitecture =====
@@ -171,14 +175,14 @@ patch_width = patches_imgs_train.shape[3]
 model = get_unet(n_ch, patch_height, patch_width)  #the U-net model
 print("Check: final output of the network:")
 print(model.output_shape)
-plot(model, to_file='./'+name_experiment+'/'+name_experiment + '_model.png')   #check how the model looks like
+plot(model, to_file='/Users/ashishbhaskar/Desktop/BTP/retina_unet/'+name_experiment+'/'+name_experiment + '_model.png')   #check how the model looks like
 json_string = model.to_json()
-open('./'+name_experiment+'/'+name_experiment +'_architecture.json', 'w').write(json_string)
+open('/Users/ashishbhaskar/Desktop/BTP/retina_unet/'+name_experiment+'/'+name_experiment +'_architecture.json', 'w').write(json_string)
 
 
 
 #============  Training ==================================
-checkpointer = ModelCheckpoint(filepath='./'+name_experiment+'/'+name_experiment +'_best_weights.h5', verbose=1, monitor='val_loss', mode='auto', save_best_only=True) #save at each epoch if the validation decreased
+checkpointer = ModelCheckpoint(filepath='/Users/ashishbhaskar/Desktop/BTP/retina_unet/'+name_experiment+'/'+name_experiment +'_best_weights.h5', verbose=1, monitor='val_loss', mode='auto', save_best_only=True) #save at each epoch if the validation decreased
 
 
 # def step_decay(epoch):
@@ -191,31 +195,17 @@ checkpointer = ModelCheckpoint(filepath='./'+name_experiment+'/'+name_experiment
 # lrate_drop = LearningRateScheduler(step_decay)
 
 patches_masks_train = masks_Unet(patches_masks_train)  #reduce memory consumption
+
+# print(patches_imgs_train.shape)
+# print(patches_masks_train.shape)
+
 model.fit(patches_imgs_train, patches_masks_train, epochs=N_epochs, batch_size=batch_size, verbose=2, shuffle=True, validation_split=0.1, callbacks=[checkpointer])
 
 
 #========== Save and test the last model ===================
-model.save_weights('./'+name_experiment+'/'+name_experiment +'_last_weights.h5', overwrite=True)
+model.save_weights('/Users/ashishbhaskar/Desktop/BTP/retina_unet/'+name_experiment+'/'+name_experiment +'_last_weights.h5', overwrite=True)
 #test the model
 # score = model.evaluate(patches_imgs_test, masks_Unet(patches_masks_test), verbose=0)
 # print('Test score:', score[0])
 # print('Test accuracy:', score[1])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#

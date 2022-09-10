@@ -21,7 +21,8 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import jaccard_score 
 from sklearn.metrics import f1_score
 import sys
-sys.path.insert(0, './lib/')
+# sys.path.insert(0, './lib/')
+sys.path.append('/Users/ashishbhaskar/Desktop/BTP/retina_unet/lib')
 # help_functions.py
 from help_functions import *
 # extract_patches.py
@@ -38,7 +39,8 @@ from pre_processing import my_PreProc
 
 #========= CONFIG FILE TO READ FROM =======
 config = configparser.RawConfigParser()
-config.read('configuration.txt')
+# config.read('configuration.txt')
+config.read_file(open(r'/Users/ashishbhaskar/Desktop/BTP/retina_unet/configuration.txt'))
 #===========================================
 #run the training on invariant or local
 path_data = config.get('data paths', 'path_local')
@@ -60,7 +62,7 @@ stride_width = int(config.get('testing settings', 'stride_width'))
 assert (stride_height < patch_height and stride_width < patch_width)
 #model name
 name_experiment = config.get('experiment name', 'name')
-path_experiment = './' +name_experiment +'/'
+path_experiment = '/Users/ashishbhaskar/Desktop/BTP/retina_unet/' +name_experiment +'/'
 #N full images to be predicted
 Imgs_to_test = int(config.get('testing settings', 'full_images_to_test'))
 #Grouping of the predicted images
